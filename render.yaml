@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: voiceflow-staging
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: TRANSCRIPTION_PROVIDER_URL
+        sync: false
+      - key: TRANSCRIPTION_PROVIDER_KEY
+        sync: false
