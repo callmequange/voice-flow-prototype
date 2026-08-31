@@ -46,6 +46,16 @@ python3 -m http.server 8000
 
 Open [http://localhost:8000](http://localhost:8000), grant microphone permission, and click the microphone button to dictate.
 
+To run the transcription proxy, configure the provider URL and key on the server process:
+
+```bash
+TRANSCRIPTION_PROVIDER_URL=https://provider.example/transcribe \
+TRANSCRIPTION_PROVIDER_KEY={{TRANSCRIPTION_PROVIDER_KEY}} \
+npm start
+```
+
+The browser sends multipart audio to `/api/transcribe`; the server forwards it with the secret key and returns the provider response.
+
 ## Run tests
 
 Install is not required; the project uses Node's built-in test runner:
