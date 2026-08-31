@@ -1,0 +1,7 @@
+{
+  "name": "voice-flow-prototype",
+  "private": true,
+  "scripts": {
+    "test": "node --test history-utils.test.js"
+  }
+}

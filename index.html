@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f5f9" />
+    <title>Voiceflow — voice, made clear</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-window">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark"><span></span><span></span><span></span></div>
+          <span>voiceflow</span>
+        </div>
+        <button class="new-note" id="newNote"><span>＋</span> New dictation <kbd>⌘ N</kbd></button>
+        <nav class="nav">
+          <button class="nav-item active" data-view="workspace"><span class="nav-icon">◉</span> Workspace</button>
+          <button class="nav-item" data-view="library"><span class="nav-icon">▤</span> My library <em>12</em></button>
+        </nav>
+        <div class="sidebar-label">Recent</div>
+        <label class="history-search"><span>⌕</span><input id="historySearch" type="search" placeholder="Search transcripts" aria-label="Search transcripts" /></label>
+        <div class="export-actions"><button id="exportJson" type="button">JSON</button><button id="exportText" type="button">TXT</button></div>
+        <div class="recent-list">
+          <button class="recent active"><span class="recent-dot purple"></span><span><b>Project sync notes</b><small>Today, 9:42 AM</small></span><i>•••</i></button>
+          <button class="recent"><span class="recent-dot orange"></span><span><b>Ideas for launch</b><small>Yesterday, 4:18 PM</small></span><i>•••</i></button>
+          <button class="recent"><span class="recent-dot blue"></span><span><b>Grocery list</b><small>Aug 28, 11:05 AM</small></span><i>•••</i></button>
+        </div>
+        <div class="sidebar-bottom">
+          <button class="profile"><span class="avatar">G</span><span><b>Gao Wanquan</b><small>Personal plan</small></span><span class="chevron">⌄</span></button>
+          <button class="settings" data-view="settings">⚙ <span>Settings</span></button>
+        </div>
+      </aside>
+
+      <section class="content">
+        <header class="topbar">
+          <div class="breadcrumbs"><span>Workspace</span><b>/</b><strong id="pageTitle">Project sync notes</strong></div>
+          <div class="top-actions"><button class="icon-button" title="Search">⌕</button><button class="icon-button" title="Help">?</button><button class="upgrade">Upgrade <span>↗</span></button></div>
+        </header>
+
+        <div class="workspace" id="workspaceView">
+          <div class="workspace-heading">
+            <div><p class="eyebrow">TODAY · 9:42 AM</p><h1>Project sync notes</h1></div>
+            <div class="heading-actions"><button class="quiet-button" id="copyButton">Copy text <span>⌘ C</span></button><button class="more-button">•••</button></div>
+          </div>
+          <div class="status-line"><span class="status-dot"></span><span id="statusText">Transcribed from a 04:32 recording</span><span class="status-separator">·</span><span>English (US)</span></div>
+          <div class="transcript-card">
+            <div class="card-toolbar"><span class="toolbar-label">TRANSCRIPT</span><span class="confidence">✦ AI enhanced</span><button class="edit-button">Edit</button></div>
+            <div class="transcript" id="transcript">
+              <p>Okay, quick update on the project sync. We’re still on track for the beta launch next Thursday.</p>
+              <p>The design team wrapped up the onboarding flow, and engineering is finishing the new workspace permissions today.</p>
+              <p>Let’s keep the feedback loop tight this week. I’ll share the updated checklist in the channel after this call.</p>
+            </div>
+            <div class="card-footer"><span><span class="sound-wave">▂▅▇▅▂</span> 04:32</span><span>Saved just now</span></div>
+          </div>
+          <div class="suggestion-row"><span class="sparkle">✦</span><b>Make it yours</b><button data-action="polish">Polish writing</button><button data-action="summary">Summarize</button><button data-action="bullets">Turn into bullets</button></div>
+        </div>
+
+        <div class="library-view hidden" id="libraryView"><p class="eyebrow">YOUR VOICE</p><h1>My library</h1><div class="library-grid"><div class="library-tile purple-tile">Project sync notes<small>Today, 9:42 AM</small></div><div class="library-tile orange-tile">Ideas for launch<small>Yesterday, 4:18 PM</small></div><div class="library-tile blue-tile">Grocery list<small>Aug 28, 11:05 AM</small></div></div></div>
+        <div class="settings-view hidden" id="settingsView"><p class="eyebrow">PREFERENCES</p><h1>Settings</h1><div class="settings-panel"><label>Language <select><option>English (US)</option><option>中文（普通话）</option><option>Español</option></select></label><label>Transcription engine <select><option>Voiceflow Cloud · Best accuracy</option><option>On-device · Private</option></select></label><label class="toggle-row">Auto-punctuate <input type="checkbox" checked /><span class="toggle"></span></label><label class="toggle-row">Keep audio recordings <input type="checkbox" /><span class="toggle"></span></label></div></div>
+
+        <div class="recorder">
+          <div class="recorder-copy"><span class="live-dot" id="liveDot"></span><span id="recorderLabel">Ready when you are</span><small id="shortcutLabel">Hold <kbd>⌥ Space</kbd> to dictate</small></div>
+          <button class="record-button" id="recordButton" aria-label="Start recording"><span class="mic">●</span></button>
+          <div class="recorder-hint">Your words, <i>unfiltered.</i></div>
+        </div>
+      </section>
+    </main>
+    <div class="toast" id="toast"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
