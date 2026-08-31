@@ -2,6 +2,7 @@
   "name": "voice-flow-prototype",
   "private": true,
   "scripts": {
-    "test": "node --test history-utils.test.js"
+    "test": "node --test history-utils.test.js cloud-speech.test.js",
+    "start": "node server.js"
   }
 }

@@ -8,6 +8,7 @@ const transcript = $('#transcript');
 const toast = $('#toast');
 let recording = false;
 let finalTranscript = '';
+let shortcutActive = false;
 const HISTORY_KEY = 'voiceflow-transcript-history';
 const starterHistory = [
   { title: 'Project sync notes', text: 'Okay, quick update on the project sync. We’re still on track for the beta launch next Thursday.\n\nThe design team wrapped up the onboarding flow, and engineering is finishing the new workspace permissions today.\n\nLet’s keep the feedback loop tight this week. I’ll share the updated checklist in the channel after this call.', date: 'Today, 9:42 AM', color: 'purple' },
@@ -17,6 +18,8 @@ const starterHistory = [
 let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || 'null') || starterHistory;
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+const languageSelect = $('#languageSelect');
+const engineSelect = $('#engineSelect');
 
 if (recognition) {
   recognition.continuous = true;
@@ -67,6 +70,17 @@ if (recognition) {
     }
   };
 }
+languageSelect?.addEventListener('change', () => {
+  if (recognition) recognition.lang = languageSelect.value;
+  statusText.textContent = `Language set to ${languageSelect.options[languageSelect.selectedIndex].text}`;
+  showToast(`Speech language changed to ${languageSelect.options[languageSelect.selectedIndex].text}`);
+});
+engineSelect?.addEventListener('change', () => {
+  if (engineSelect.value === 'cloud') {
+    showToast('Cloud engine integration is next');
+    engineSelect.value = 'web-speech';
+  }
+});
 
 function escapeHtml(value) {
   return value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[character]);
@@ -172,6 +186,21 @@ recordButton.addEventListener('click', () => {
   }
   finalTranscript = '';
   recognition.start();
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.altKey && event.code === 'Space' && !shortcutActive) {
+    event.preventDefault();
+    shortcutActive = true;
+    if (!recording) recordButton.click();
+  }
+});
+document.addEventListener('keyup', (event) => {
+  if (event.code === 'Space' && shortcutActive) {
+    event.preventDefault();
+    shortcutActive = false;
+    if (recording) recordButton.click();
+  }
 });
 
 document.querySelectorAll('[data-action]').forEach((button) => {
