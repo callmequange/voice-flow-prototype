@@ -18,6 +18,8 @@ const starterHistory = [
 let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || 'null') || starterHistory;
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+const languageSelect = $('#languageSelect');
+const engineSelect = $('#engineSelect');
 
 if (recognition) {
   recognition.continuous = true;
@@ -68,6 +70,17 @@ if (recognition) {
     }
   };
 }
+languageSelect?.addEventListener('change', () => {
+  if (recognition) recognition.lang = languageSelect.value;
+  statusText.textContent = `Language set to ${languageSelect.options[languageSelect.selectedIndex].text}`;
+  showToast(`Speech language changed to ${languageSelect.options[languageSelect.selectedIndex].text}`);
+});
+engineSelect?.addEventListener('change', () => {
+  if (engineSelect.value === 'cloud') {
+    showToast('Cloud engine integration is next');
+    engineSelect.value = 'web-speech';
+  }
+});
 
 function escapeHtml(value) {
   return value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[character]);
