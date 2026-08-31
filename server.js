@@ -13,6 +13,8 @@ const staticFiles = {
 };
 const providerUrl = process.env.TRANSCRIPTION_PROVIDER_URL;
 const providerKey = process.env.TRANSCRIPTION_PROVIDER_KEY;
+const deepSeekKey = process.env.DEEPSEEK_API_KEY;
+const deepSeekUrl = process.env.DEEPSEEK_API_URL || 'https://api.deepseek.com/chat/completions';
 
 function send(response, status, body) {
   response.writeHead(status, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
@@ -23,6 +25,32 @@ const server = http.createServer(async (request, response) => {
   if (request.method === 'OPTIONS') {
     response.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type, Authorization' });
     return response.end();
+  }
+  if (request.method === 'POST' && request.url === '/api/enhance') {
+    if (!deepSeekKey) return send(response, 503, { error: 'DeepSeek enhancement is not configured' });
+    const chunks = [];
+    for await (const chunk of request) chunks.push(chunk);
+    let input;
+    try { input = JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { return send(response, 400, { error: 'Request body must be valid JSON' }); }
+    if (typeof input.text !== 'string' || !input.text.trim()) return send(response, 400, { error: 'text is required' });
+    const prompts = {
+      polish: 'Polish the transcript for clarity and natural grammar. Preserve meaning and return only the revised text.',
+      summary: 'Summarize this transcript in one concise paragraph. Return only the summary.',
+      bullets: 'Convert this transcript into a concise bullet list. Return only the bullets.',
+    };
+    const instruction = prompts[input.action] || prompts.polish;
+    try {
+      const upstream = await fetch(deepSeekUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${deepSeekKey}` },
+        body: JSON.stringify({ model: process.env.DEEPSEEK_MODEL || 'deepseek-chat', messages: [{ role: 'system', content: instruction }, { role: 'user', content: input.text }], temperature: 0.2, stream: false }),
+      });
+      const payload = await upstream.json().catch(() => ({}));
+      if (!upstream.ok) return send(response, upstream.status, { error: payload.error?.message || 'DeepSeek request failed' });
+      const text = payload.choices?.[0]?.message?.content;
+      if (typeof text !== 'string') return send(response, 502, { error: 'DeepSeek response did not contain text' });
+      return send(response, 200, { text, action: input.action || 'polish' });
+    } catch (error) { return send(response, 502, { error: `DeepSeek unavailable: ${error.message}` }); }
   }
   const asset = staticFiles[request.url];
   if (request.method === 'GET' && asset) {

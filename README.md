@@ -56,6 +56,8 @@ npm start
 
 The browser sends multipart audio to `/api/transcribe`; the server forwards it with the secret key and returns the provider response.
 
+Transcript enhancement uses DeepSeek server-side. Set `DEEPSEEK_API_KEY` in Render to enable `/api/enhance`; optionally override `DEEPSEEK_API_URL` and `DEEPSEEK_MODEL`.
+
 ## Run tests
 
 Install is not required; the project uses Node's built-in test runner:

@@ -4,5 +4,6 @@
   "scripts": {
     "test": "node --test history-utils.test.js cloud-speech.test.js",
     "start": "node server.js"
+    ,"test:server": "node --test cloud-speech.test.js history-utils.test.js"
   }
 }
