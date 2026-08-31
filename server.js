@@ -1,6 +1,16 @@
 const http = require('node:http');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const port = Number(process.env.PORT || 8000);
+const publicDir = __dirname;
+const staticFiles = {
+  '/': { file: 'index.html', type: 'text/html' },
+  '/index.html': { file: 'index.html', type: 'text/html' },
+  '/styles.css': { file: 'styles.css', type: 'text/css' },
+  '/app.js': { file: 'app.js', type: 'text/javascript' },
+  '/cloud-speech.js': { file: 'cloud-speech.js', type: 'text/javascript' },
+};
 const providerUrl = process.env.TRANSCRIPTION_PROVIDER_URL;
 const providerKey = process.env.TRANSCRIPTION_PROVIDER_KEY;
 
@@ -13,6 +23,14 @@ const server = http.createServer(async (request, response) => {
   if (request.method === 'OPTIONS') {
     response.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type, Authorization' });
     return response.end();
+  }
+  const asset = staticFiles[request.url];
+  if (request.method === 'GET' && asset) {
+    return fs.readFile(path.join(publicDir, asset.file), (error, content) => {
+      if (error) return send(response, 404, { error: 'Asset not found' });
+      response.writeHead(200, { 'Content-Type': `${asset.type}; charset=utf-8`, 'Cache-Control': 'no-cache' });
+      response.end(content);
+    });
   }
   if (request.method !== 'POST' || request.url !== '/api/transcribe') return send(response, 404, { error: 'Not found' });
   if (!providerUrl || !providerKey) return send(response, 503, { error: 'Transcription provider is not configured' });
