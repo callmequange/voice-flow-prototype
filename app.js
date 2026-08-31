@@ -8,6 +8,7 @@ const transcript = $('#transcript');
 const toast = $('#toast');
 let recording = false;
 let finalTranscript = '';
+let shortcutActive = false;
 const HISTORY_KEY = 'voiceflow-transcript-history';
 const starterHistory = [
   { title: 'Project sync notes', text: 'Okay, quick update on the project sync. We’re still on track for the beta launch next Thursday.\n\nThe design team wrapped up the onboarding flow, and engineering is finishing the new workspace permissions today.\n\nLet’s keep the feedback loop tight this week. I’ll share the updated checklist in the channel after this call.', date: 'Today, 9:42 AM', color: 'purple' },
@@ -172,6 +173,21 @@ recordButton.addEventListener('click', () => {
   }
   finalTranscript = '';
   recognition.start();
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.altKey && event.code === 'Space' && !shortcutActive) {
+    event.preventDefault();
+    shortcutActive = true;
+    if (!recording) recordButton.click();
+  }
+});
+document.addEventListener('keyup', (event) => {
+  if (event.code === 'Space' && shortcutActive) {
+    event.preventDefault();
+    shortcutActive = false;
+    if (recording) recordButton.click();
+  }
 });
 
 document.querySelectorAll('[data-action]').forEach((button) => {
