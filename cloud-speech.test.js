@@ -20,6 +20,20 @@ test('posts audio and returns a provider transcript', async () => {
   assert.equal(request.options.body.get('model'), 'fast');
 });
 
+test('uses ElevenLabs field names for ASR requests', async () => {
+  let request;
+  await transcribeAudio({
+    audio: new Blob(['audio']),
+    endpoint: 'https://api.elevenlabs.io/v1/speech-to-text',
+    fetchImpl: async (_, options) => {
+      request = options;
+      return { ok: true, json: async () => ({ text: 'hello' }) };
+    },
+  });
+  assert.equal(request.body.get('language_code'), 'en-US');
+  assert.equal(request.body.get('model_id'), 'scribe_v2');
+});
+
 test('surfaces API errors', async () => {
   await assert.rejects(() => transcribeAudio({
     audio: new Blob(['audio']),

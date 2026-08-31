@@ -71,7 +71,7 @@ const server = http.createServer(async (request, response) => {
       method: 'POST',
       headers: {
         'Content-Type': request.headers['content-type'] || 'application/octet-stream',
-        Authorization: `Bearer ${providerKey}`,
+        ...(providerUrl.includes('elevenlabs') ? { 'xi-api-key': providerKey } : { Authorization: `Bearer ${providerKey}` }),
       },
       body,
     });

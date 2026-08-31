@@ -6,7 +6,7 @@ async function transcribeAudio({
   audio,
   endpoint = '/api/transcribe',
   language = 'en-US',
-  model,
+  model = 'scribe_v2',
   fetchImpl = globalThis.fetch,
 }) {
   if (!(audio instanceof Blob)) throw new TypeError('audio must be a Blob');
@@ -14,8 +14,9 @@ async function transcribeAudio({
 
   const form = new FormData();
   form.append('file', audio, audio.name || 'recording.webm');
-  form.append('language', language);
-  if (model) form.append('model', model);
+  const elevenLabs = endpoint.includes('elevenlabs');
+  form.append(elevenLabs ? 'language_code' : 'language', language);
+  if (model) form.append(elevenLabs ? 'model_id' : 'model', model);
 
   const response = await fetchImpl(endpoint, { method: 'POST', body: form });
   const payload = await response.json().catch(() => ({}));
